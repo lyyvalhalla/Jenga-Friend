@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en"> 
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+</head>
+<body>
+  <div class="main">
+    <h2>Device Motion</h2>
+    <table>    
+      <tr>
+        <td>acceleration</td><td id="Accel"></td>
+      </tr>
+      <tr>
+        <td>accelerationIncludingGravity</td><td id="AccelGrav"></td>
+      </tr>
+       <tr>
+        <td>rotation</td><td id="Rotation"></td>
+      </tr>
+    </table>
+  </div>
+  <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+  <script type="text/javascript">
+
+    var socket = io.connect('http://ec2-54-187-200-153.us-west-2.compute.amazonaws.com:8080/');
+
+    socket.on('connect', function() {
+      console.log("Connected");
+    });
+
+
+    // socket.on('Accel', function(data) {
+    //   console.log(data.x + " " + data.y + " " + data.z);
+
+    //   // drawing function here
+    // });
+
+    // socket.on('AccelX', function(data) {
+    //   console.log("AccelX: " + AccelX);
+    //   socket.emit('AccelX', data);
+    // });
+
+    // socket.on('AccelY', function(data) {
+    //   console.log("AccelY: " + AccelX);
+    //   socket.emit('AccelY', data);
+    // });
+
+    // socket.on('AccelZ', function(data) {
+    //   console.log("AccelZ: " + AccelX);
+    //   socket.emit('AccelZ', data);
+    // });
+
+    // oh-yea
+    // var sendAcceleration = function(AccelX, AccelY, AccelZ) {
+    //   console.log("sendAcceleration: " + AccelX + " " + AccelY + " " + AccelZ);
+    //   socket.broadcast.emit('Accel', { x: AccelX, y: AccelY, z: AccelZ });
+    // };
+  
+
+    init();
+
+    
+    function init() {
+      if ((window.DeviceMotionEvent) || ('listenForDeviceMovement' in window)) {
+        window.addEventListener('devicemotion', deviceMotionHandler, false);
+      } else {
+        document.getElementById("dmEvent").innerHTML = "Not supported on your device or browser.  Sorry."
+      }
+    }
+    
+    function deviceMotionHandler(eventData) {
+      var info, xyz = "[X, Y, Z]";
+
+      // Grab the acceleration including gravity from the results
+      var acceleration = eventData.acceleration;
+      info = xyz.replace("X", round(acceleration.x));
+      info = info.replace("Y", round(acceleration.y));
+      info = info.replace("Z", round(acceleration.z));
+      document.getElementById("Accel").innerHTML = info;
+      socket.broadcast.emit("hello world");
+
+
+       // sendAcceleration(info);
+      /*
+      // Grab the acceleration including gravity from the results
+      acceleration = eventData.accelerationIncludingGravity;
+      info = xyz.replace("X", round(acceleration.x));
+      info = info.replace("Y", round(acceleration.y));
+      info = info.replace("Z", round(acceleration.z));
+      document.getElementById("AccelGrav").innerHTML = info;
+
+      // Grab the acceleration including gravity from the results
+      var rotation = eventData.rotationRate;
+      info = xyz.replace("X", round(rotation.alpha));
+      info = info.replace("Y", round(rotation.beta));
+      info = info.replace("Z", round(rotation.gamma));
+      document.getElementById("Rotation").innerHTML = info;
+      */
+
+      info = eventData.interval;
+      document.getElementById("nInterval").innerHTML = info;
+    }
+
+    function round(val) {
+      var amt = 10;
+      return Math.round(val * amt) /  amt;
+    }
+
+  </script>
+  
+</body>
+</html>

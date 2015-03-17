@@ -1,0 +1,36 @@
+
+html {
+    margin: 0;
+    padding: 0;
+}
+body {
+    font-family: Verdana;
+    font-size: 10pt;
+    margin: 0;
+    overflow: hidden;
+    padding: 0;
+}
+#heading {
+    background-color: #71b87b;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    text-align: center;
+    top: 0;
+    width: 100%;
+}
+#heading h1 {
+    background-color: #64a36d;
+    font-size: 16px;
+    margin: 0;
+    padding: 6px 0;
+}
+a {
+    color: #32f;
+}
+.linkback {
+    font-size: 16px;
+}
+.linkback a {
+    color: #1155aa;
+}

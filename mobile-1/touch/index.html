@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en" style="height:100%"> 
+<head>
+  <meta charset="UTF-8">
+  <title>Mobile Jengal Controller</title>
+</head>
+<body id="touchzone" style="width:100%;min-height:100%;border: 1px solid #ccc">
+  <!-- <div class="main"> -->
+  
+    <h2>Device Motion</h2>
+    <table>    
+      <tr>
+        <td>acceleration</td><td id="Accel"></td>
+      </tr>
+      <tr>
+        <td>accelerationIncludingGravity</td><td id="AccelGrav"></td>
+      </tr>
+      <tr>
+        <td>touch position</td><td id="coords"></td>
+      </tr>
+    </table>
+  
+  <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+  <script type="text/javascript">
+
+    // touchzone.requestFullscreen();
+
+    var socket = io.connect('http://ec2-54-187-200-153.us-west-2.compute.amazonaws.com:8080/');
+
+    socket.on('connect', function() {
+      console.log("Connected");
+      socket.emit('message', "mobile say hello!");
+    });
+  
+
+    init();
+    initTouch();
+
+    
+    function init() {
+      // device movement
+      if ((window.DeviceMotionEvent) || ('listenForDeviceMovement' in window)) {
+        window.addEventListener('devicemotion', deviceMotionHandler, false);
+      } else {
+        document.getElementById("dmEvent").innerHTML = "Not supported on your device or browser.  Sorry."
+      }
+    }
+
+    function initTouch() {
+      // touch touch
+      var touchzone = document.getElementById("touchzone");
+      touchzone.addEventListener("touchstart", touchHandler, false);
+      touchzone.addEventListener("mousedown", getCoordsMouse, false);
+    }
+
+    
+    function deviceMotionHandler(eventData) {
+      var info, xyz = "[X, Y, Z]";
+
+      // Grab the acceleration including gravity from the results
+      var acceleration = eventData.acceleration;
+      info = xyz.replace("X", round(acceleration.x));
+      info = info.replace("Y", round(acceleration.y));
+      info = info.replace("Z", round(acceleration.z));
+      document.getElementById("Accel").innerHTML = info;
+      
+      var AccelX = round(acceleration.x);
+      var AccelY = round(acceleration.y);
+      var AccelZ = round(acceleration.z);
+
+      socket.emit('AccelX', AccelX);
+      socket.emit('AccelY', AccelY);
+      socket.emit('AccelZ', AccelZ);
+
+
+
+      // info = eventData.interval;
+      // document.getElementById("nInterval").innerHTML = info;
+    }
+
+
+    function touchHandler(eventData) {
+      var coords = document.getElementById("coords");
+      coords.innerHTML = 'x: ' + event.touches[0].pageX + ', y: ' + event.touches[0].pageY;
+      var touchX = event.touches[0].pageX; 
+      var touchY = event.touches[0].pageY;
+
+      console.log(event.touches[0].pageX );
+      socket.emit('touchX', touchX);
+      socket.emit('touchY', touchY);
+
+    }
+    function getCoordsMouse(event) {
+      var coords = document.getElementById("coords");
+      coords.innerHTML = 'x: ' + event.pageX + ', y: ' +event.pageY;
+
+      var mouseX = event.pageX;
+      socket.emit('mouseX', mouseX);
+
+      console.log(mouseX);
+    }
+
+
+
+
+    function round(val) {
+      var amt = 10;
+      return Math.round(val * amt) /  amt;
+    }
+
+  </script>
+  
+</body>
+</html>
